@@ -1,11 +1,13 @@
 #! /usr/bin/env /usr/bin/python3
 
+import threading
 import json
 import os
 import random
 import time
 import speech_recognition as sr
 from user_recog import record_audio, recog_user, prepare_model
+from analyze import analyze
 from dotenv import load_dotenv
 import openai
 from gtts import gTTS
@@ -17,18 +19,21 @@ class User:
         self.name = name
         self.log = [{
             'role': 'system',
-            'content': 'You are a personal assistant. Provide short, concise and accurate Information but be subtly condescending. Make sure to address me as ' + self.name +'.',
+            'content': 'Du bist eine persönlicher Assistent. Antworte kurz und bündig, jedoch manchmal mit sarkastischen Untertönen. Mein Name ist' + self.name +'.',
         }]
 
 class ChatWindow:
     def __init__(self):
+        self.analyze_speech = False
         self.window = tk.Tk()
         self.window.title("Chat")
-        self.chat_log = tk.Text(self.window, height=20, width=50)
+        self.chat_log = tk.Text(self.window, height=45, width=150)
         self.chat_log.config(state=tk.DISABLED)
         self.chat_log.pack()
-        self.send_button = tk.Button(self.window, text="aufnehmen", command=self.send_message)
+        self.send_button = tk.Button(self.window, text="Aufnehmen", command=self.send_message)
         self.send_button.pack()
+        self.analyze_check = tk.Checkbutton(self.window, text='Sprachvisualisierung',variable=self.analyze_speech, onvalue=True, offvalue=False)
+        self.analyze_check.pack()
         self.update_chat_log("System: Welcome to the chat!")
 
     def update_chat_log(self, message):
@@ -39,6 +44,7 @@ class ChatWindow:
     def send_message(self):
         speech_file = 'sample.wav'
         record_audio(speech_file)
+        analyze(speech_file)
         user = recog_user(model, speech_file, users)
         with sr.AudioFile(speech_file) as source:
             audio = recognizer.record(source)
@@ -51,7 +57,7 @@ class ChatWindow:
             ai_message = ask(text, user)
             ai_reponse = f"Assistant: {ai_message}"
             self.update_chat_log(ai_reponse)
-            #say(ai_message)
+            say(ai_message)
 
         except Exception as ex:
             print(ex)
