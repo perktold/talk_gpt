@@ -1,0 +1,53 @@
+* talk-GPT
+** Ziele:
++ Speaker Identification mittels Mfcc (Felix Perktold)
++ Text to Speech(Marcel Huter)
++ Speech to Text (Felix Perktold)
++ Kommunikation mit Chat-GPT (Felix Perktold)
++ Graphische Oberfläche mit TKinter (Daniel Hirsch)
++ Sprachanalyse (Marcel Huter)
+
+** Graphische Darstellung:
+Für das Erstellen der GUI wurde TKinter verwendet. Es wurde ein Button erstellt, der die Aufnahme der Stimme startet.
+#+BEGIN_SRC python
+self.send_button = tk.Button(self.window, text="aufnehmen", command=self.send_message)=
+#+END_SRC
+
+Beim Drücken des Buttons wird die Funktion „send_message“ ausgeführt. In dieser wird der Sprecher erkannt und das Gesprochene in Text umgewandelt. Dieser Text wird dann inklusive der Namen des Sprechers im Chat angezeigt. 
+#+BEGIN_SRC python
+user_message = f"{user.name}: {text}"
+#+END_SRC
+
+Es wird zuerst mithilfe der Speaker Identification der Name des Sprechers ermittelt und im Chat angezeigt.  Anschließend wird der Text an ChatGPT geschickt um anschließend die Antwort der KI im Chat anzuzeigen. Jedes Mal, wenn etwas gesprochen wird oder ChatGPT eine Nachricht zurückliefert wird der Chat mit folgenden Befehl aktualisiert: 
+#+BEGIN_SRC python
+self.update_chat_log(user_message)
+#+END_SRC
+
+** Analyse der Spracheingabe:
+Die Analyse von Audio-Dateien faszinierte uns im HCIN-Unterricht sehr, sodass wir uns in unserem Projekt ausführlicher mit dieser Thematik beschäftigen wollten. Zuerst wird der User aufgefordert, eine Frage, einen Befehl oder der ähnlichen einzusprechen. Diese Aufnahme wird anschließend in einer .wav Datei abgespeichert, um die Weiterverarbeitung zu ermöglichen. Anfänglich wurde mit .mp3 Dateien gearbeitet, jedoch stellte sich heraus, dass die Library „librosa“ mit .wav Dateien besser arbeitet. Mithilfe dieser Library werden insgesamt 5 Analysen erstellt:
+*** Waveform
+Eine Waveform ist eine grafische Darstellung der Veränderung eines Signals über der Zeit.
+[[./.figures/Waveform.png]]
+*** Spectogram
+Ein Spektrogramm zeigt, wie sich die Frequenzkomponenten eines Signals im Laufe der Zeit ändern. Jeder Ton hat eine bestimmte Frequenz, und diese Frequenzen können in kleinere Bestandteile (Frequenzanteile) aufgeteilt werden, die für das menschliche Ohr nicht unbedingt unterscheidbar sind. Ein Spektrogramm gibt an, welche Frequenzanteile zu welcher Zeit im Signal vorhanden sind und wie stark sie sind. Dies kann beispielsweise verwendet werden, um verschiedene Klänge zu identifizieren oder um Änderungen im Signal im Laufe der Zeit zu verfolgen.
+[[./.figures/Spectogram.png]]
+*** Mel-Spectrogram
+Ein Mel-Spektrogramm ist eine spezielle Darstellung der Frequenzkomponenten eines Signals über der Zeit, die mithilfe der Mel-Skala eine logarithmische Frequenzachse nutzt und somit das menschliche Gehör besser abbildet.
+[[./.figures/Mel_Spectogram.png]]
+*** Chromagram
+Ein Chromagramm ist eine spezielle Art von Spektrogramm, das die Energieverteilung von musikalischen Noten und Akkorden in einem Musiksignal anzeigt, indem es die zwölf chromatischen Tonhöhen als Achsen verwendet
+[[./.figures/Chromagram.png]]
+*** MFCCs
+MFCCs (Mel Frequency Cepstral Coefficients) sind eine Art von Merkmalen, die aus einem Mel-Spektrum extrahiert werden und oft in der Sprach- und Musikverarbeitung zur Beschreibung von Audiosignalen verwendet werden. Dabei wird eine Audioaufnahme mithilfe einer Fourier-Transformation in Frequenzbereiche Aufgeteilt, deren Amplituden die Koeffizienten dieser Analyse Darstellen.
+[[./.figures/MFCCs.png]]
+
+Die Analyse wird mithilfe von matplotlib dargestellt
+
+** Usererkennung
+Die Usererkennung basiert auf der oben aufgeführten MFCC-Analyse. Dabei wird die MFCC-Analyse der Spracheingabe mit einer MFCC-Analyse von Beispieldateien verglichen, welche beim Starten des Programms ausgeführt und gespeichert wird. Diese Anfängliche Analyse versucht, die Stimmfarbe eines Users abzubilden, indem für mehrere Beispiel-Audiodateien pro Benutzer eine MFCC-Analyse mit 40 resultierenden Koeffizienten pro Zeiteinheit (bzw "Sample") durgeführt wird. Die resultierenden Amplitudenwerte werden entlang der Zeitachse gemittelt und durch einen "naive gaussian bayes classifier", ein statistisches Werkzeug, welches für simples, jedoch ressourceneffizientes Machine-Learning benutzt wird als Sprachmodell zusammengefasst. Die MFCCs der Spracheingabe des Benutzers wird mithilfe dieses Modells mit den Testdaten verglichen, um den Benutzer zu ermitteln. Es entsteht eine gewisse Fehleranfälligkeit durch die Verwendung von Mikrofonen mit unterschiedlicher Qualität, da verschiedene Mikrofone die Amplituden bestimmter Teilfrequenzen hervorheben, bzw mit unterschiedlicher intensität aufnehmen. Auch liegt ein gewisser Störfaktor durch das Rauschen von beispielsweise Laptop-Mikofonen vor.
+
+** Chat-GPT
+Die Kommunikation mit ChatGPT geschieht durch eine einfache API. Bei jeder Anfrage an diese API muss der gesamte bisherige Chatverlauf mitgeschickt werden, wodurch es möglich ist, Einstellungen am Verhalten der KI Vorzunehmen (zB "Du bist ein hilfreicher persönlicher Assistent" oder nicht ganz so ernst: "Du bist Donald Trump. Antworte wie Donald Trump") oder den Namen des jeweilligen Benutzers festzulegen. Auch ist es möglich seperate Gesprächsfäden parallel zu führen, da der Gesprächsverlauf für jeden Benutzer separat abgespeichert wird.
+
+** Speech to Text
+Für die Spracherkennung (nicht die Benutzererkennung) wurde ebenfalls eine API (Spracherkennung von Google) benutzt.

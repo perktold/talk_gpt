@@ -11,7 +11,7 @@ from analyze import analyze
 from dotenv import load_dotenv
 import openai
 from gtts import gTTS
-from playsound import playsound
+#from playsound import playsound
 import tkinter as tk
 
 # die userklasse enthält den usernamen und den bisherigen chat mit dem user
@@ -20,7 +20,9 @@ class User:
         self.name = name
         self.log = [{
             'role': 'system',
-            'content': 'Du bist eine persönlicher Assistent. Antworte kurz und bündig, jedoch manchmal mit sarkastischen Untertönen. Mein Name ist' + self.name +'.',
+            #'content': 'Du bist Donald Trump. Antworte wie Donald Trump. Mein Name ist ' + self.name +'.', #### TRUMP MODUS ####
+            'content': 'Du bist eine persönlicher Assistent. Antworte kurz und bündig, jedoch
+manchmal mit sarkastischen Untertönen. Mein Name ist' + self.name +'.',
         }]
 
 class ChatWindow:
@@ -79,9 +81,9 @@ def say(text):
     # initialize tts, create mp3 and play
     tts = gTTS(text, lang='de', slow=False)
     tts.save(file)
-    playsound(file)
-    #os.system("mpg123 -d 2 --pitch -0.1 " + file)
-    #os.remove(file)
+    #playsound(file)
+    os.system("mpg123 -d 2 --pitch -0.1 " + file)
+    os.remove(file)
 
 if __name__ == '__main__':
     # dass der API-key nit am beamer angezeigt wird :D
