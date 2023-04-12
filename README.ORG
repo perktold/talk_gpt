@@ -1,4 +1,5 @@
 * talk-GPT
+Talk-GPT stellt das Abschlussprojekt im Human-Computer Interfacing Fach dar. Ziel ist es, mithilfe von ChatGPT und Sprach/-Benutzererkennung einen virtuellen Gesprächspartner zu erstellen, welcher unterschiedliche Rollen einnehmen kann und parallel ablaufende Gesprächsfäden mit verschiedenen Benutzern aufrecht erhalten kann.
 ** Ziele:
 + Speaker Identification mittels Mfcc (Felix Perktold)
 + Text to Speech(Marcel Huter)
